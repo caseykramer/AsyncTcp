@@ -22,18 +22,20 @@ type BufferManager(totalSize,window) =
                 | Allocate (saea,reply) ->
                     if offset + window > totalSize 
                         then reply.Reply(false)
-                        else saea.SetBuffer(buffer,offset,window)
+                        else 
+                             Array.fill buffer offset window 0uy
+                             saea.SetBuffer(buffer,offset,window)
                              reply.Reply(true)
                     return! loop (offset + window)
                 | Send ((saea:SocketAsyncEventArgs),data,reply) ->
                     let length = Math.Min(data.Length,window)
+                    Array.fill buffer offset length 0uy
                     Array.Copy(data,0,buffer,offset,length)
                     saea.SetBuffer(buffer,offset,length)
                     reply.Reply(data.[length..])
                     return! loop (offset+window)
                 | Free size ->
-                    let newOffset = Math.Min(0,offset - window)
-                    Array.fill buffer offset window 0uy 
+                    let newOffset = Math.Min(0,offset - window) 
                     return! loop (newOffset)
                 | CurrentBuffer reply ->
                     reply.Reply(offset)

@@ -19,7 +19,7 @@ type TWrapperTransport(buffer:byte[],writer) as this =
     override __.Close() = 
         closed <- true
     override __.Write(buf,offset,len) = 
-        writer buf.[offset..(offset+len)]
+        writer buf.[offset..(offset+len - 1)]
     override __.Dispose(disposing) = 
         ignore()
 
@@ -32,6 +32,7 @@ type TAsyncServer(processor:TProcessor,port:int,protoFactory:TProtocolFactory) =
             match socket with
             | Disposed -> ignore()
             | Active s ->
+                Log.debugf "Starting Thrift Async Receive"
                 let! recv = server.ReceiveAsync(socket)
                 match recv with
                 | None -> ignore()

@@ -121,7 +121,7 @@ let Receive pool (socket: Socket Disposable) (buf: B) =
                     else 
                         if a.Buffer = null
                             then None
-                            else let result = a.Buffer.[a.Offset..(a.Offset+(a.BytesTransferred))]
+                            else let result = a.Buffer.[a.Offset..(a.Offset+(a.BytesTransferred - 1))]
                                  buf.FreeBuffer(a,1024)
                                  Some result)
  
